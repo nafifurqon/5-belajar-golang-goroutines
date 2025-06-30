@@ -86,9 +86,21 @@ func TestBufferedChannel(t *testing.T) {
 	}()
 
 	go func() {
+		fmt.Println(cap(channel))
+		fmt.Println(len(channel))
 		fmt.Println(<-channel)
+		fmt.Println("==================")
+		fmt.Println(cap(channel))
+		fmt.Println(len(channel))
 		fmt.Println(<-channel)
+		fmt.Println("==================")
+		fmt.Println(cap(channel))
+		fmt.Println(len(channel))
 		fmt.Println(<-channel)
+		fmt.Println("==================")
+		fmt.Println(cap(channel))
+		fmt.Println(len(channel))
+		fmt.Println("==================")
 	}()
 
 	time.Sleep(2 * time.Second)
