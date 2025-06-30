@@ -1,0 +1,96 @@
+package belajar_golang_goroutines
+
+import (
+	"fmt"
+	"testing"
+	"time"
+)
+
+/*
+	notes:
+	- ketika ada kirim data ke channel tapi tidak ada yang menerima, maka error: "panic: send on closed channel"
+	- ketika ada menerima data dari channel tapi tidak ada yang mengirim, maka error time out atau deadlock
+*/
+
+func TestCreateChannel(t *testing.T) {
+	channel := make(chan string)
+	defer close(channel)
+
+	go func() {
+		time.Sleep(2 * time.Second)
+		channel <- "Muhammad Nafi Furqon Diani"
+		fmt.Println("Selesai mengirim data ke channel")
+	}()
+
+	data := <-channel
+	fmt.Println("data", data)
+
+	time.Sleep(5 * time.Second)
+}
+
+func GiveMeResponse(channel chan string) {
+	time.Sleep(2 * time.Second)
+	channel <- "Muhammad Nafi Furqon Diani"
+}
+
+func TestChannelAsParameter(t *testing.T) {
+	channel := make(chan string)
+	defer close(channel)
+
+	go GiveMeResponse(channel)
+
+	data := <-channel
+	fmt.Println("data", data)
+
+	time.Sleep(5 * time.Second)
+}
+
+func OnlyIn(channel chan<- string) {
+	time.Sleep(2 * time.Second)
+	/*
+		error karena sudah ditandai hanya menerima channel untuk mengirim data
+		invalid operation: cannot receive from send-only channel channel (variable of type chan<- string)
+	*/
+	// data := <-channel
+	channel <- "Muhammad Nafi Furqon Diani"
+}
+
+func OnlyOut(channel <-chan string) {
+	/*
+		error karena sudah ditandai hanya menerima channel untuk menerima data
+		invalid operation: cannot send to receive-only channel channel (variable of type <-chan string)
+	*/
+	// channel <- "Muhammad Nafi Furqon Diani"
+	data := <-channel
+	fmt.Println("data", data)
+}
+
+func TestInOutChannel(t *testing.T) {
+	channel := make(chan string)
+	defer close(channel)
+
+	go OnlyIn(channel)
+	go OnlyOut(channel)
+
+	time.Sleep(5 * time.Second)
+}
+
+func TestBufferedChannel(t *testing.T) {
+	channel := make(chan string, 3)
+	defer close(channel)
+
+	go func() {
+		channel <- "Muhammad"
+		channel <- "Nafi"
+		channel <- "Furqon"
+	}()
+
+	go func() {
+		fmt.Println(<-channel)
+		fmt.Println(<-channel)
+		fmt.Println(<-channel)
+	}()
+
+	time.Sleep(2 * time.Second)
+	fmt.Println("Selesai")
+}
