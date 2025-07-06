@@ -97,12 +97,12 @@ func Transfer(user1 *UserBalance, user2 *UserBalance, amount int) {
 func TestDeadlock(t *testing.T) {
 	user1 := UserBalance{
 		Name:    "Nafi",
-		Balance: 1000000,
+		Balance: 1000000, // ekspektasinya diakhir balance-nya 1.100.000 ternyata ga sesuai
 	}
 
 	user2 := UserBalance{
 		Name:    "Furqon",
-		Balance: 1000000,
+		Balance: 1000000, // ekspektasinya diakhir balance-nya 900.000 ternyata ga sesuai
 	}
 
 	fmt.Println("Awal User 1", user1.Name, "Balance", user1.Balance)
@@ -110,6 +110,10 @@ func TestDeadlock(t *testing.T) {
 	fmt.Println("====================")
 
 	go Transfer(&user1, &user2, 100000)
+
+	// kalau di sleep, jadi aman, hasilnya sesuai ekspektasi
+	// kalau tidak di sleep, terjadi deadlock
+	// time.Sleep(5 * time.Second)
 
 	fmt.Println("Transfer1 User 1", user1.Name, "Balance", user1.Balance)
 	fmt.Println("Transfer1 User 2", user2.Name, "Balance", user2.Balance)
